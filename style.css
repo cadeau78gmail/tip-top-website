@@ -354,10 +354,20 @@ section{scroll-margin-top:80px}
    RESPONSIVE BREAKPOINTS
 ══════════════════════════════════════════ */
 
+
 /* ── TABLET (max 1100px) ── */
 @media(max-width:1100px){
   .cs-prev{left:-6px}
   .cs-next{right:-6px}
+  
+  /* HERO FIX */
+  .hero-inner{grid-template-columns:1fr 1fr;gap:32px}
+  .hero-title{font-size:clamp(2rem,4.5vw,3.2rem)}
+  .hero-title .line2{font-size:1.6rem}
+  .hero-desc{font-size:.95rem;max-width:100%}
+  .hero-actions{max-width:100%}
+  .hero-stats{max-width:100%}
+  .hero-visual{padding-left:0}
 }
 
 /* ── TABLET (max 960px) ── */
