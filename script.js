@@ -128,7 +128,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ── CARD SLIDER FACTORY ──
-function createCardSlider({ trackId, prevId, nextId, dotsId, barId, interval }) {
+function createCardSlider({ trackId, prevId, nextId, dotsId, barId, interval, bounce = false }) {
   const track = document.getElementById(trackId);
   const prevBtn = document.getElementById(prevId);
   const nextBtn = document.getElementById(nextId);
@@ -139,12 +139,12 @@ function createCardSlider({ trackId, prevId, nextId, dotsId, barId, interval }) 
   const slides = Array.from(track.querySelectorAll('.card-slide'));
   const total = slides.length;
   let current = 0, autoTimer;
+  let direction = 1;
   const GAP = 20;
 
   function perView() {
     if (window.innerWidth <= 600) return 1;
-    if (window.innerWidth <= 960) return 2;
-    return 3;
+    return 2;
   }
   function maxIndex() { return Math.max(0, total - perView()); }
 
@@ -170,7 +170,7 @@ function createCardSlider({ trackId, prevId, nextId, dotsId, barId, interval }) 
   function render() {
     const viewport = track.parentElement.clientWidth;
     const pv = perView();
-    const cardW = (viewport - GAP * (pv - 1)) / pv;
+    const cardW = slides[0]?.getBoundingClientRect().width || (viewport - GAP * (pv - 1)) / pv;
     const offset = current * (cardW + GAP);
     track.style.transform = `translateX(-${offset}px)`;
     syncDots();
@@ -229,7 +229,22 @@ function createCardSlider({ trackId, prevId, nextId, dotsId, barId, interval }) 
     });
   }
 
-  function startAuto() { startBar(); autoTimer = setInterval(() => { next(); startBar(); }, interval); }
+  function bounceStep() {
+    const max = maxIndex();
+    if (max === 0) return;
+    if (current >= max) direction = -1;
+    else if (current <= 0) direction = 1;
+    goTo(current + direction);
+  }
+
+  function startAuto() {
+    startBar();
+    autoTimer = setInterval(() => {
+      if (bounce) bounceStep();
+      else next();
+      startBar();
+    }, interval);
+  }
   function resetAuto() {
     clearInterval(autoTimer);
     if (bar) { bar.style.transition = 'none'; bar.style.width = '0%'; }
@@ -255,9 +270,9 @@ function createCardSlider({ trackId, prevId, nextId, dotsId, barId, interval }) 
   startAuto();
 }
 
-createCardSlider({ trackId:'booksTrack',  prevId:'booksPrev',  nextId:'booksNext',  dotsId:'booksDots',  barId:'booksBar',  interval:3500 });
-createCardSlider({ trackId:'toysTrack',   prevId:'toysPrev',   nextId:'toysNext',   dotsId:'toysDots',   barId:'toysBar',   interval:3500 });
-createCardSlider({ trackId:'chartsTrack', prevId:'chartsPrev', nextId:'chartsNext', dotsId:'chartsDots', barId:'chartsBar', interval:3500 });
+createCardSlider({ trackId:'booksTrack',  prevId:'booksPrev',  nextId:'booksNext',  dotsId:'booksDots',  barId:'booksBar',  interval:2000, bounce:true });
+createCardSlider({ trackId:'toysTrack',   prevId:'toysPrev',   nextId:'toysNext',   dotsId:'toysDots',   barId:'toysBar',   interval:2000, bounce:true });
+createCardSlider({ trackId:'chartsTrack', prevId:'chartsPrev', nextId:'chartsNext', dotsId:'chartsDots', barId:'chartsBar', interval:2000, bounce:true });
 
 // ── CONSULTANCY LIGHTBOX ──
 const consultImgs = document.querySelectorAll('.consult-gallery img');
@@ -387,7 +402,6 @@ if (orderSubmitBtn) {
     if (extra) {
       msg += `\n📝 *Additional Request:*\n${extra}\n`;
     }
-    msg += `\n🚚 *Delivery:* FREE\n`;
     msg += `\n_Sent from tiptop-website.vercel.app_`;
 
     const encoded = encodeURIComponent(msg);
