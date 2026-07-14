@@ -288,47 +288,84 @@ const orderSuccess  = document.getElementById('orderSuccess');
 const qtyInput      = document.getElementById('of-qty');
 
 function openOrder(btn) {
-  const slide = btn.closest('.card-slide');
+  const slide = btn?.closest('.card-slide');
   const name  = slide?.dataset.name  || '';
   const cat   = slide?.dataset.cat   || '';
   const desc  = slide?.dataset.desc  || '';
   const src   = slide?.dataset.src   || slide?.querySelector('img')?.src || '';
 
-  document.getElementById('modalProductImg').src  = src;
-  document.getElementById('modalProductName').textContent = name;
-  document.getElementById('modalProductCat').textContent  = cat;
-  document.getElementById('modalProductDesc').textContent = desc;
-  document.getElementById('of-product').value = name;
-  qtyInput.value = 1;
+  const modalImg = document.getElementById('modalProductImg');
+  const modalName = document.getElementById('modalProductName');
+  const modalCat = document.getElementById('modalProductCat');
+  const modalDesc = document.getElementById('modalProductDesc');
+  const productField = document.getElementById('of-product');
 
-  orderForm.style.display = '';
-  orderSuccess.style.display = 'none';
+  if (modalImg) modalImg.src = src;
+  if (modalName) modalName.textContent = name;
+  if (modalCat) modalCat.textContent = cat;
+  if (modalDesc) modalDesc.textContent = desc;
+  if (productField) productField.value = name;
+  if (qtyInput) qtyInput.value = 1;
+
+  if (orderForm) orderForm.style.display = '';
+  if (orderSuccess) orderSuccess.style.display = 'none';
   clearErrors();
 
-  orderOverlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  if (orderOverlay) {
+    orderOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
 }
 
 function openCustomOrder() {
-  document.getElementById('modalProductImg').src = 'https://res.cloudinary.com/nrob/image/upload/f_auto,q_auto,w_500/v1685521829/tip%20top%20consultancy/zmyn7wtr7yauhd8f1bow.jpg';
-  document.getElementById('modalProductName').textContent = 'Custom Order';
-  document.getElementById('modalProductCat').textContent  = 'Any Product';
-  document.getElementById('modalProductDesc').textContent = 'Describe any product you want in the form — we\'ll source it and deliver it to you!';
-  document.getElementById('of-product').value = 'Custom / Not listed';
-  qtyInput.value = 1;
+  const modalImg = document.getElementById('modalProductImg');
+  const modalName = document.getElementById('modalProductName');
+  const modalCat = document.getElementById('modalProductCat');
+  const modalDesc = document.getElementById('modalProductDesc');
+  const productField = document.getElementById('of-product');
 
-  orderForm.style.display = '';
-  orderSuccess.style.display = 'none';
+  if (modalImg) modalImg.src = 'https://res.cloudinary.com/nrob/image/upload/f_auto,q_auto,w_500/v1685521829/tip%20top%20consultancy/zmyn7wtr7yauhd8f1bow.jpg';
+  if (modalName) modalName.textContent = 'Custom Order';
+  if (modalCat) modalCat.textContent = 'Any Product';
+  if (modalDesc) modalDesc.textContent = 'Describe any product you want in the form — we\'ll source it and deliver it to you!';
+  if (productField) productField.value = 'Custom / Not listed';
+  if (qtyInput) qtyInput.value = 1;
+
+  if (orderForm) orderForm.style.display = '';
+  if (orderSuccess) orderSuccess.style.display = 'none';
   clearErrors();
 
-  orderOverlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  if (orderOverlay) {
+    orderOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
 }
 
 function closeOrder() {
   orderOverlay.classList.remove('active');
   document.body.style.overflow = '';
 }
+
+window.openOrder = openOrder;
+window.openCustomOrder = openCustomOrder;
+
+const orderButtons = document.querySelectorAll('.card-order-btn');
+orderButtons.forEach(btn => {
+  btn.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openOrder(btn);
+  });
+});
+
+const customOrderButtons = document.querySelectorAll('.btn-custom-order');
+customOrderButtons.forEach(btn => {
+  btn.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    openCustomOrder();
+  });
+});
 
 const orderCloseButton = document.getElementById('orderClose');
 const successCloseButton = document.getElementById('successClose');
